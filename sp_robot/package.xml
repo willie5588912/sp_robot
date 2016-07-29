@@ -12,6 +12,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>sp_robot_description</run_depend>
+  <run_depend>sp_robot_moveit_config</run_depend>
 
   <export>
      <metapackage/>

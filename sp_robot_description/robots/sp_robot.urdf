@@ -4,17 +4,17 @@
     name="base_link">
     <inertial>
       <origin
-        xyz="1.65152633235799E-09 -4.54166557192076E-08 0.039679712866701"
+        xyz="1.65152624909126E-09 -4.54166562357215E-08 0.0396797128667005"
         rpy="0 0 0" />
       <mass
-        value="4.5128902913737" />
+        value="4.51289029137366" />
       <inertia
-        ixx="0.0218207868610675"
-        ixy="-6.49050656080204E-09"
-        ixz="-1.81260571692417E-10"
-        iyy="0.0218207462209312"
-        iyz="-7.06054057764683E-09"
-        izz="0.0373916981566289" />
+        ixx="0.0218207868610673"
+        ixy="-6.49050658464367E-09"
+        ixz="-1.81260589579053E-10"
+        iyy="0.0218207462209311"
+        iyz="-7.06054068589066E-09"
+        izz="0.0373916981566287" />
     </inertial>
     <visual>
       <origin
@@ -44,17 +44,17 @@
     name="link1">
     <inertial>
       <origin
-        xyz="0.31034 0 0.025896"
+        xyz="0.3103426600126 -8.67361737988404E-19 0.0258963638677587"
         rpy="0 0 0" />
       <mass
-        value="5.8092" />
+        value="5.80923663996572" />
       <inertia
-        ixx="0.013322"
-        ixy="2.472E-17"
-        ixz="0.0015083"
-        iyy="0.25777"
-        iyz="-5.421E-19"
-        izz="0.26815" />
+        ixx="0.0133220015383998"
+        ixy="5.05601274129968E-18"
+        ixz="0.0015083007530338"
+        iyy="0.257771881512656"
+        iyz="-1.63362699405159E-19"
+        izz="0.268148098036163" />
     </inertial>
     <visual>
       <origin
@@ -67,7 +67,7 @@
       <material
         name="">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -85,7 +85,7 @@
     type="continuous">
     <origin
       xyz="0 0 0.092"
-      rpy="0 0 0.39881" />
+      rpy="0 0 0" />
     <parent
       link="base_link" />
     <child
@@ -97,17 +97,17 @@
     name="link2">
     <inertial>
       <origin
-        xyz="0.31034 0 0.025896"
+        xyz="0.3103426600126 -8.67361737988404E-19 0.0258963638677587"
         rpy="0 0 0" />
       <mass
-        value="5.8092" />
+        value="5.80923663996572" />
       <inertia
-        ixx="0.013322"
-        ixy="2.9924E-17"
-        ixz="0.0015083"
-        iyy="0.25777"
-        iyz="0"
-        izz="0.26815" />
+        ixx="0.0133220015383998"
+        ixy="5.07222535631293E-18"
+        ixz="0.0015083007530338"
+        iyy="0.257771881512656"
+        iyz="-1.70108855199135E-19"
+        izz="0.268148098036163" />
     </inertial>
     <visual>
       <origin
@@ -120,7 +120,7 @@
       <material
         name="">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -138,11 +138,64 @@
     type="continuous">
     <origin
       xyz="0.6 0 0.052"
-      rpy="0 0 -0.84687" />
+      rpy="0 0 0" />
     <parent
       link="link1" />
     <child
       link="link2" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link_eef">
+    <inertial>
+      <origin
+        xyz="0 2.12503625807159E-17 -0.029098730684551"
+        rpy="0 0 0" />
+      <mass
+        value="4.90182522957532" />
+      <inertia
+        ixx="0.0329697548523066"
+        ixy="-3.82452316344264E-19"
+        ixz="2.17579084834153E-18"
+        iyy="0.0285947548523066"
+        iyz="7.9850500863712E-18"
+        izz="0.0376776537175757" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sp_robot_description/meshes/link_eef.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sp_robot_description/meshes/link_eef.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_eef"
+    type="continuous">
+    <origin
+      xyz="0.6 0 0.152"
+      rpy="0 0 0" />
+    <parent
+      link="link2" />
+    <child
+      link="link_eef" />
     <axis
       xyz="0 0 -1" />
   </joint>
