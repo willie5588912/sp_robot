@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <name>sp_robot</name>
+  <version>0.0.0</version>
+  <description>A simple robot arm.</description>
+
+  <maintainer email="willie5588912@gmail.com">Wei Shih</maintainer>
+  <author email="willie5588912@gmail.com">Wei Shih</author>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>sp_robot_description</run_depend>
+
+  <export>
+     <metapackage/>
+   </export>
+</package>
