@@ -1,6 +1,13 @@
 #include <sstream>
 #include <sp_robot_hw_interface/sp_robot_hw_interface.h>
 
+extern "C" {
+	#include "sp_ethercat/sp_ethercat.h"
+}
+
+int count = 0;
+int curr_pos = 0;
+
 SpHwInterface::SpHwInterface():
     n_dof_(3)
 {
@@ -15,7 +22,7 @@ SpHwInterface::SpHwInterface():
   jnt_names_.push_back("joint2");
   jnt_names_.push_back("joint_eef");
 
-  //Raw Data
+  // Raw Data
   jnt_curr_pos_.resize(n_dof_);
   jnt_curr_vel_.resize(n_dof_);
   jnt_curr_eff_.resize(n_dof_);
@@ -35,10 +42,16 @@ SpHwInterface::SpHwInterface():
   registerInterface(&jnt_state_interface_);
   registerInterface(&jnt_pos_interface_);
 
+  // Initialize Ethercat
+  igh_configure(); 
+  igh_start(); 
+
 }
 
 SpHwInterface::~SpHwInterface()
 {
+	igh_stop();
+	igh_cleanup();
 }
 
 void SpHwInterface::read()
@@ -55,11 +68,17 @@ void SpHwInterface::read()
 
 void SpHwInterface::write()
 {
+#if 0
   std::cout << "write at " << std::setprecision(13) << ros::Time::now().toSec() << " s : " << std::endl;
   for(size_t i = 0; i < n_dof_; i++)
     std::cout << jnt_names_[i] << ": "<< jnt_cmd_pos_[i] << std::endl;
 
   std::cout << std::endl;
+#endif
+  curr_pos = igh_update(10);
+  if(count % 100 ==0)
+  	std::cout << curr_pos<< std::endl;
+  count ++;
 }
 
 ros::Time SpHwInterface::getTime() const 

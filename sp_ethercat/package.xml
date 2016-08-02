@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+  <name>sp_ethercat</name>
+  <version>0.0.0</version>
+  <description>The sp_ethercat package</description>
+
+  <maintainer email="willie@todo.todo">willie</maintainer>
+
+  <license>BSD</license>
+
+  <author email="willie5588912@gmail.com">Wei Shih</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- You can specify that this package is a metapackage here: -->
+    <!-- <metapackage/> -->
+
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

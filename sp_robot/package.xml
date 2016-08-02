@@ -14,6 +14,7 @@
   <run_depend>sp_robot_description</run_depend>
   <run_depend>sp_robot_moveit_config</run_depend>
   <run_depend>sp_robot_ros_control</run_depend>
+  <run_depend>sp_ethercat</run_depend>
 
   <export>
      <metapackage/>

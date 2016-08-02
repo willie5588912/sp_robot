@@ -44,10 +44,12 @@
   <build_depend>hardware_interface</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>sp_robot_hw_interface</build_depend>
+  <build_depend>sp_ethercat</build_depend>
   <run_depend>controller_manager</run_depend>
   <run_depend>hardware_interface</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>sp_robot_hw_interface</run_depend>
+  <run_depend>sp_ethercat</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

@@ -1,16 +1,15 @@
 #include <sp_robot_hw_interface/sp_robot_hw_interface.h>
 
-
 int main(int argc, char **argv)
 {
-  //initialize ros
+  // initialize ros
   ros::init(argc, argv, "sp_robot_ros_control_node");
   ros::NodeHandle nh;
 
   SpHwInterface robot;
   controller_manager::ControllerManager cm(&robot, nh);
 
-  //start loop
+  // start loop
   ros::Rate rate(1.0 / robot.getPeriod().toSec());
   ros::AsyncSpinner spinner(1);
   spinner.start();
