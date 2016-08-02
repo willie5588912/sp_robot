@@ -1,0 +1,9 @@
+controller_list:
+  - name: ""
+    action_ns: sp_robot_arm_controller/follow_joint_trajectory 
+  #action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    joints:
+      - joint1 
+      - joint2 
+      - joint_eef 

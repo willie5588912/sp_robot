@@ -1,0 +1,26 @@
+<launch>
+
+  <!--Use your own URDF model-->
+  <arg name="model" default="$(find iceira_diff_ros_control)/urdf/iceira_diff.xacro"/>
+  <arg name="rqt_steering" default="true"/>
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+  <rosparam command="load" file="$(find iceira_diff_ros_control)/config/iceira_diff_control.yaml" />
+
+  <!--Spawn Controller-->
+  <node name="iceira_diff_controller_spawner" pkg="controller_manager" type="spawner"
+    args="iceira_diff_joint_state_controller
+          iceira_diff_diff_drive_controller"/>
+
+  <!--Publish robot state-->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+  </node>
+
+  <!--Gui steering console (Optional)-->
+  <group if="$(arg rqt_steering)">
+    <node name="rqt_robot_steering" pkg="rqt_robot_steering" type="rqt_robot_steering">
+      <param name="default_topic" value="iceira_diff_diff_drive_controller/cmd_vel"/>
+    </node>
+  </group>
+
+</launch>

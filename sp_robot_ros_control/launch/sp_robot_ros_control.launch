@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- send robot urdf to param server -->
+  <arg name="model" default="$(find sp_robot_description)/robots/sp_robot.urdf"/>
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+  <rosparam command="load" file="$(find sp_robot_ros_control)/config/sp_robot_controllers.yaml" />
+
+  <!--Spawn Controller-->
+  <node name="sp_robot_controller_spawner" pkg="controller_manager" type="spawner"
+    args="sp_robot_joint_state_controller
+          sp_robot_arm_controller"/>
+  
+  <!--Publish robot state-->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+  </node>
+
+  <!-- Remap follow_joint_trajectory -->
+  <remap from="/follow_joint_trajectory" to="/sp_robot_arm_controller/follow_joint_trajectory"/>
+
+</launch>
