@@ -103,6 +103,11 @@ bool igh_configure()
   return true;
 }
 
+int *igh_get_home_pos()
+{
+  return eth_home_pos_;
+}
+
 
 bool igh_start()
 {
@@ -146,7 +151,7 @@ bool igh_start()
 
 }
 
-int igh_update(int enc_count)
+int *igh_update(int *eth_enc_offset_)
 {
   counter++;
 
@@ -159,16 +164,22 @@ int igh_update(int enc_count)
 
   // periodically check the states and show the current pose
   //if(counter % 100 == 0)
+#if 0
   curr_pos_0 = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
   curr_pos_1 = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
   //printf("curr_pos = %d\n", curr_pos);
+#endif
+  eth_curr_pos_[0] = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
+  eth_curr_pos_[1] = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
 
   // write target position
-  target_pos_0 += enc_count; 
-  target_pos_1 += enc_count; 
+  eth_tar_pos_[0] = eth_home_pos_[0] + eth_enc_offset_[0];
+  eth_tar_pos_[1] = eth_home_pos_[1] + eth_enc_offset_[1];
+  //eth_tar_pos_[0] += enc_count; 
+  //eth_tar_pos_[1] += enc_count; 
   //printf("target_pos = %d\n", target_pos);
-  EC_WRITE_S32(domainOutput_pd_0 + mbdh_tarpos_0, target_pos_0);
-  EC_WRITE_S32(domainOutput_pd_1 + mbdh_tarpos_1, target_pos_1);
+  EC_WRITE_S32(domainOutput_pd_0 + mbdh_tarpos_0, eth_tar_pos_[0]);
+  EC_WRITE_S32(domainOutput_pd_1 + mbdh_tarpos_1, eth_tar_pos_[1]);
 
   // send process data
   ecrt_domain_queue(domainOutput_0);
@@ -177,7 +188,7 @@ int igh_update(int enc_count)
   ecrt_domain_queue(domainInput_1);
   ecrt_master_send(master);
 
-  return curr_pos_0;
+  return eth_curr_pos_;
 }
 
 void igh_stop()
@@ -216,12 +227,16 @@ int ini_driver(int state)
   ecrt_domain_process(domainOutput_1);
   ecrt_domain_process(domainInput_1);
 
-  curr_pos_0 = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
-  curr_pos_1 = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
+  eth_curr_pos_[0]= EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
+  eth_curr_pos_[1]= EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
   //printf("curr_pos = %d\n", curr_pos);
 
-  target_pos_0 = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
-  target_pos_1 = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
+  // use current position as home position
+  eth_home_pos_[0] = eth_curr_pos_[0];
+  eth_home_pos_[1] = eth_curr_pos_[1];
+
+  //eth_tar_pos_[0] = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
+  //eth_tar_pos_[1] = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
   //printf("target_pos = %d\n", target_pos);
 
   switch(state)

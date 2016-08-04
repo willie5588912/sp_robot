@@ -14,14 +14,19 @@
 #include <transmission_interface/simple_transmission.h>
 #include <transmission_interface/transmission_interface.h>
 
+#define NDOF NSLAVE
+#define ENC_FULL 10000
+#define PI 3.1415926
+
 class SpHwInterface : public hardware_interface::RobotHW
 {
 public:
   SpHwInterface();
   ~SpHwInterface();
 
-  void read();
-  void write();
+  //void read();
+  //void write();
+  void update();
   ros::Time getTime() const;
   ros::Duration getPeriod() const;
 
