@@ -107,13 +107,14 @@ bool igh_configure()
 bool igh_start()
 {
   int state = -500;
-  while (state <= 5) 
+  while (state <= 1000) 
   {
     ini_driver(state);
     state++;
-    usleep(1000);
+    usleep(2000);
   }
 
+#if 0
   uint16_t statwd_0 = EC_READ_U16(domainInput_pd_0 + mbdh_statwd_0);
   printf("6041h_0 = %4.4x\n",statwd_0); 
   if( CHECK_BIT(statwd_0, 0) && !CHECK_BIT(statwd_0, 1) &&
@@ -143,10 +144,97 @@ bool igh_start()
     printf("Slave 1 Servo on fail.\n");
     return false;
   }
-
+#endif
 }
 
-int igh_update(int enc_count)
+int* igh_get_curr_pos()
+{
+  // receive process data
+  ecrt_master_receive(master);
+  ecrt_domain_process(domainOutput_0);
+  ecrt_domain_process(domainInput_0);
+  ecrt_domain_process(domainOutput_1);
+  ecrt_domain_process(domainInput_1);
+
+  // periodically check the states and show the current pose
+  //if(counter % 100 == 0)
+  eth_curr_pos_[0] = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
+  eth_curr_pos_[1] = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
+  //printf("curr_pos = %d\n", curr_pos);
+
+  // send process data
+  ecrt_domain_queue(domainOutput_0);
+  ecrt_domain_queue(domainInput_0);
+  ecrt_domain_queue(domainOutput_1);
+  ecrt_domain_queue(domainInput_1);
+  ecrt_master_send(master);
+
+  return eth_curr_pos_;
+}
+
+
+int* igh_update(int *eth_enc_offset_)
+{
+  // receive process data
+  ecrt_master_receive(master);
+  ecrt_domain_process(domainOutput_0);
+  ecrt_domain_process(domainInput_0);
+  ecrt_domain_process(domainOutput_1);
+  ecrt_domain_process(domainInput_1);
+
+#if 1
+  // periodically check the states and show the current pose
+  //if(counter % 100 == 0)
+  eth_curr_pos_[0]= EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
+  eth_curr_pos_[1] = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
+  //printf("curr_pos = %d\n", curr_pos);
+
+  // write target position
+  eth_tar_pos_[0] += eth_enc_offset_[0];
+  eth_tar_pos_[1] += eth_enc_offset_[1];
+  //printf("target_pos = %d\n", target_pos);
+  EC_WRITE_S32(domainOutput_pd_0 + mbdh_tarpos_0, eth_tar_pos_[0]);
+  EC_WRITE_S32(domainOutput_pd_1 + mbdh_tarpos_1, eth_tar_pos_[1]);
+#endif
+
+  // send process data
+  ecrt_domain_queue(domainOutput_0);
+  ecrt_domain_queue(domainInput_0);
+  ecrt_domain_queue(domainOutput_1);
+  ecrt_domain_queue(domainInput_1);
+  ecrt_master_send(master);
+
+  return eth_curr_pos_;
+}
+
+
+#if 0
+int* igh_read()
+{
+  // receive process data
+  ecrt_master_receive(master);
+  ecrt_domain_process(domainOutput_0);
+  ecrt_domain_process(domainInput_0);
+  ecrt_domain_process(domainOutput_1);
+  ecrt_domain_process(domainInput_1);
+
+  // periodically check the states and show the current pose
+  //if(counter % 100 == 0)
+  eth_curr_pos_[0]= EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
+  eth_curr_pos_[1] = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
+  //printf("curr_pos = %d\n", curr_pos);
+
+  // send process data
+  ecrt_domain_queue(domainOutput_0);
+  ecrt_domain_queue(domainInput_0);
+  ecrt_domain_queue(domainOutput_1);
+  ecrt_domain_queue(domainInput_1);
+  ecrt_master_send(master);
+
+  return eth_curr_pos_;
+}
+
+void igh_write(int *eth_enc_offset_)
 {
   counter++;
 
@@ -157,18 +245,12 @@ int igh_update(int enc_count)
   ecrt_domain_process(domainOutput_1);
   ecrt_domain_process(domainInput_1);
 
-  // periodically check the states and show the current pose
-  //if(counter % 100 == 0)
-  curr_pos_0 = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
-  curr_pos_1 = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
-  //printf("curr_pos = %d\n", curr_pos);
-
   // write target position
-  target_pos_0 += enc_count; 
-  target_pos_1 += enc_count; 
+  eth_tar_pos_[0] += eth_enc_offset_[0];
+  eth_tar_pos_[1] += eth_enc_offset_[1];
   //printf("target_pos = %d\n", target_pos);
-  EC_WRITE_S32(domainOutput_pd_0 + mbdh_tarpos_0, target_pos_0);
-  EC_WRITE_S32(domainOutput_pd_1 + mbdh_tarpos_1, target_pos_1);
+  EC_WRITE_S32(domainOutput_pd_0 + mbdh_tarpos_0, eth_tar_pos_[0]);
+  EC_WRITE_S32(domainOutput_pd_1 + mbdh_tarpos_1, eth_tar_pos_[1]);
 
   // send process data
   ecrt_domain_queue(domainOutput_0);
@@ -177,8 +259,8 @@ int igh_update(int enc_count)
   ecrt_domain_queue(domainInput_1);
   ecrt_master_send(master);
 
-  return curr_pos_0;
 }
+#endif
 
 void igh_stop()
 {
@@ -216,14 +298,21 @@ int ini_driver(int state)
   ecrt_domain_process(domainOutput_1);
   ecrt_domain_process(domainInput_1);
 
-  curr_pos_0 = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
-  curr_pos_1 = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
+  uint16_t statwd_0 = EC_READ_U16(domainInput_pd_0 + mbdh_statwd_0);
+  uint16_t statwd_1 = EC_READ_U16(domainInput_pd_1 + mbdh_statwd_1);
+  printf("6041h_0 = %4.4x\n",statwd_0); 
+  printf("6041h_1 = %4.4x\n",statwd_1); 
+
+#if 0
+  eth_curr_pos_[0]= EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
+  eth_curr_pos_[1]= EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
   //printf("curr_pos = %d\n", curr_pos);
 
-  target_pos_0 = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
-  target_pos_1 = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
+  eth_tar_pos_[0] = EC_READ_S32(domainInput_pd_0 + mbdh_actpos_0);
+  eth_tar_pos_[1] = EC_READ_S32(domainInput_pd_1 + mbdh_actpos_1);
   //printf("target_pos = %d\n", target_pos);
 
+#endif
   switch(state)
   {
     case -100:
@@ -238,19 +327,19 @@ int ini_driver(int state)
       EC_WRITE_S8(domainOutput_pd_1 + mbdh_modeop_1, 8);
     break;
 
-    case 3:
+    case 100:
       printf("shutdown\n");
       EC_WRITE_U16(domainOutput_pd_0 + mbdh_cntlwd_0, 0x06);
       EC_WRITE_U16(domainOutput_pd_1 + mbdh_cntlwd_1, 0x06);
     break;
 
-    case 4:
+    case 200:
       printf("switch on\n");
       EC_WRITE_U16(domainOutput_pd_0 + mbdh_cntlwd_0, 0x07);
       EC_WRITE_U16(domainOutput_pd_1 + mbdh_cntlwd_1, 0x07);
     break;
 
-    case 5:
+    case 700:
       printf("enable operation (should servo on now)\n");
       EC_WRITE_U16(domainOutput_pd_0 + mbdh_cntlwd_0, 0xF);
       EC_WRITE_U16(domainOutput_pd_1 + mbdh_cntlwd_1, 0xF);

@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "ecrt.h"
 
+#define NSLAVE 3 
 #define MotorSlavePos0 0, 0
 #define MotorSlavePos1 0, 1
 #define MBDHT2510BA1 0x0000066f, 0x525100a1
@@ -169,9 +170,14 @@ static ec_sync_info_t mbdh_syncs_1[] = {
  { 0xff }
 };
 
+int n_dof_ = 3;
+
 bool igh_configure();
 bool igh_start();
-int  igh_update(int);
+//void igh_write(int *);
+//int *igh_read();
+int *igh_get_curr_pos();
+int *igh_update(int *);
 void igh_stop();
 void igh_cleanup();
 
@@ -179,5 +185,8 @@ int  ini_driver(int);
 void check_domain_state();
 void check_master_state();
 void check_slave_config_states();
+
+int eth_tar_pos_[NSLAVE];
+int eth_curr_pos_[NSLAVE];
 
 #endif
