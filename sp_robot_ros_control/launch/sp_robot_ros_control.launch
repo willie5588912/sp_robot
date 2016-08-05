@@ -12,9 +12,9 @@
           sp_robot_arm_controller"/>
   
   <!--Publish robot state-->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+  <!--node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
     respawn="false" output="screen">
-  </node>
+  </node-->
 
   <!-- Remap follow_joint_trajectory -->
   <remap from="/follow_joint_trajectory" to="/sp_robot_arm_controller/follow_joint_trajectory"/>
